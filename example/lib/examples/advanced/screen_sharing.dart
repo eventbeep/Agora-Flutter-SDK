@@ -36,23 +36,20 @@ class _State extends State<ScreenSharing> {
   }
 
   _initEngine() {
-    RtcEngine.createWithContext(RtcEngineContext(config.appId)).then((value) {
+    RtcEngine.createWithContext(RtcEngineContext(config.appId))
+        .then((value) async {
+      _engine = value;
+      _addListeners();
+      await _engine.enableVideo();
+      if (kIsWeb) {
+        await _engine.startScreenCapture(0);
+      } else {
+        await _engine.startPreview();
+      }
+      await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
+      await _engine.setClientRole(ClientRole.Broadcaster);
       setState(() {
-        _engine = value;
-        _addListeners();
-        () async {
-          await _engine.enableVideo();
-          if (kIsWeb) {
-            await _engine.startScreenCapture(0);
-          } else {
-            await _engine.startPreview();
-          }
-          await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
-          await _engine.setClientRole(ClientRole.Broadcaster);
-          setState(() {
-            startPreview = true;
-          });
-        }();
+        startPreview = true;
       });
     });
   }

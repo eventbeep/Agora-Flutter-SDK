@@ -19,6 +19,8 @@ import 'package:js/js_util.dart';
 
 @JS('IrisRtcEngine')
 class _IrisRtcEngine {
+  external _IrisRtcEngine();
+
   external _IrisRtcDeviceManager get deviceManager;
 
   external Future<dynamic> callApi(int apiType, String params, [Object? extra]);

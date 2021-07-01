@@ -39,19 +39,16 @@ class _State extends State<JoinChannelVideo> {
   }
 
   _initEngine() {
-    RtcEngine.createWithContext(RtcEngineContext(config.appId)).then((value) {
+    RtcEngine.createWithContext(RtcEngineContext(config.appId))
+        .then((value) async {
+      _engine = value;
+      _addListeners();
+      await _engine.enableVideo();
+      await _engine.startPreview();
+      await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
+      await _engine.setClientRole(ClientRole.Broadcaster);
       setState(() {
-        _engine = value;
-        _addListeners();
-        () async {
-          await _engine.enableVideo();
-          await _engine.startPreview();
-          await _engine.setChannelProfile(ChannelProfile.LiveBroadcasting);
-          await _engine.setClientRole(ClientRole.Broadcaster);
-          setState(() {
-            startPreview = true;
-          });
-        }();
+        startPreview = true;
       });
     });
   }
@@ -78,11 +75,13 @@ class _State extends State<JoinChannelVideo> {
       },
       remoteVideoStateChanged: (uid, state, reason, elapsed) {
         log('remoteVideoStateChanged ${uid} ${state} ${reason} ${elapsed}');
-        // if (state == VideoRemoteState.Decoding) {
-        //   setState(() {
-        //     remoteUid.add(uid);
-        //   });
-        // }
+        if (kIsWeb) {
+          if (state == VideoRemoteState.Decoding) {
+            setState(() {
+              remoteUid.add(uid);
+            });
+          }
+        }
       },
       userOffline: (uid, reason) {
         log('userOffline  ${uid} ${reason}');
