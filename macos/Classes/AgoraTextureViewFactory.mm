@@ -50,7 +50,9 @@ public:
       CVPixelBufferUnlockBaseAddress(buffer, 0);
 
       dispatch_semaphore_wait(renderer.lock, DISPATCH_TIME_FOREVER);
-      CVPixelBufferRelease(renderer.buffer_cache);
+      if (renderer.buffer_cache) {
+        CVPixelBufferRelease(renderer.buffer_cache);
+      }
       renderer.buffer_cache = buffer;
       dispatch_semaphore_signal(renderer.lock);
 
@@ -114,7 +116,7 @@ public:
     CVPixelBufferRelease(self.buffer_cache);
   }
   if (self.buffer_temp) {
-    CVPixelBufferRelease(self.buffer_temp);
+    //    CVPixelBufferRelease(self.buffer_temp);
   }
 }
 
@@ -126,7 +128,7 @@ public:
 
 - (CVPixelBufferRef)copyPixelBuffer {
   dispatch_semaphore_wait(self.lock, DISPATCH_TIME_FOREVER);
-  CVPixelBufferRelease(self.buffer_temp);
+  //  CVPixelBufferRelease(self.buffer_temp);
   self.buffer_temp = self.buffer_cache;
   CVPixelBufferRetain(self.buffer_temp);
   dispatch_semaphore_signal(self.lock);
