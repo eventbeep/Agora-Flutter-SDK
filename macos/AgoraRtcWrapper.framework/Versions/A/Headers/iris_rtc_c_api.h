@@ -188,12 +188,6 @@ IRIS_API int CallIrisRtcRawDataPluginManagerApi(
     char *result);
 
 /// IrisRtcRenderer
-IRIS_API IrisEventHandlerHandle SetIrisRtcRendererEventHandler(
-    IrisRtcRendererPtr renderer_ptr, IrisCEventHandler *event_handler);
-
-IRIS_API void UnsetIrisRtcRendererEventHandler(IrisRtcRendererPtr renderer_ptr,
-                                               IrisEventHandlerHandle handle);
-
 IRIS_API IrisRtcRendererCacheConfigHandle EnableVideoFrameCache(
     IrisRtcRendererPtr renderer_ptr, IrisRtcCRendererCacheConfig *cache_config,
     unsigned int uid, const char *channel_id = "");
