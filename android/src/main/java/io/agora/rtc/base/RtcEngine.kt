@@ -1,9 +1,19 @@
 package io.agora.rtc.base
 
+// Added
+import android.util.Log
+import io.agora.agora_rtc_engine.AgoraRtcEnginePlugin
+import io.agora.rtc.ss.ScreenSharingClient
+
 import android.content.Context
+import java.io.*
 import io.agora.rtc.*
 import io.agora.rtc.internal.EncryptionConfig
 import io.agora.rtc.models.UserInfo
+
+import io.agora.rtc.ss.*
+import io.agora.rtc.ss.gles.*
+import io.agora.rtc.ss.impl.*
 
 class IRtcEngine {
   interface RtcEngineInterface : RtcUserInfoInterface, RtcAudioInterface, RtcVideoInterface,
@@ -12,7 +22,7 @@ class IRtcEngine {
     RtcAudioRouteInterface, RtcEarMonitoringInterface, RtcDualStreamInterface,
     RtcFallbackInterface, RtcTestInterface, RtcMediaMetadataInterface,
     RtcWatermarkInterface, RtcEncryptionInterface, RtcAudioRecorderInterface,
-    RtcInjectStreamInterface, RtcCameraInterface, RtcStreamMessageInterface {
+    RtcInjectStreamInterface, RtcCameraInterface, RtcStreamMessageInterface, RtcScreenShareInterface {
     fun create(params: Map<String, *>, callback: Callback)
 
     fun destroy(callback: Callback)
@@ -361,11 +371,16 @@ class IRtcEngine {
 
     fun sendStreamMessage(params: Map<String, *>, callback: Callback)
   }
+
+  //Added for screen share
+  interface RtcScreenShareInterface{
+    fun screenShare(params: Map<String, *>, callback: Callback)
+  }
 }
 
 class RtcEngineManager(
   private val emit: (methodName: String, data: Map<String, Any?>?) -> Unit
-) : IRtcEngine.RtcEngineInterface {
+) : IRtcEngine.RtcEngineInterface, /*Added*/ ScreenSharingClient() {
   var engine: RtcEngine? = null
     private set
   private var mediaObserver: MediaObserver? = null
@@ -424,7 +439,7 @@ class RtcEngineManager(
   }
 
   override fun switchChannel(params: Map<String, *>, callback: Callback) {
-    val token = params["token"] as? String
+    token = params["token"] as String
     val channelName = params["channelName"] as String
     (params["options"] as? Map<*, *>)?.let {
       callback.code(engine?.switchChannel(token, channelName, mapToChannelMediaOptions(it)))
@@ -434,6 +449,10 @@ class RtcEngineManager(
   }
 
   override fun leaveChannel(callback: Callback) {
+    //Added
+    if(sharing){
+      mSSClient.stop(mContext)
+    }
     callback.code(engine?.leaveChannel())
   }
 
@@ -529,7 +548,7 @@ class RtcEngineManager(
   }
 
   override fun joinChannelWithUserAccount(params: Map<String, *>, callback: Callback) {
-    val token = params["token"] as? String
+    token = params["token"] as String
     val channelName = params["channelName"] as String
     val userAccount = params["userAccount"] as String
     (params["options"] as? Map<*, *>)?.let {
@@ -1267,5 +1286,42 @@ class RtcEngineManager(
         (params["message"] as String).toByteArray()
       )
     )
+  }
+
+  //Added for screen share
+  lateinit var mContext : Context
+  lateinit var mSSClient : ScreenSharingClient
+  lateinit var token : String
+  lateinit var mListener : ScreenSharingClient.IStateListener
+  var sharing : Boolean = false
+  
+  fun initateClient(token: String){
+    println("client init")
+    mSSClient = ScreenSharingClient.getInstance()
+    val temp1 = TempClass()
+    mListener = temp1.createListener(mSSClient, token)
+    mSSClient.setListener(mListener)
+    mContext = TempClass.getContext()
+  }
+
+  override fun screenShare(params: Map<String, *>,callback: Callback){
+    token = params["token"] as String
+    sharing = params["share"] as Boolean
+    if(!this::mSSClient.isInitialized){
+      initateClient(token)
+      ScreenSharingService.setEngine(engine)
+    }
+    if (sharing){
+      mSSClient.start(
+        mContext, 
+        params["appID"] as String, 
+        token, 
+        params["channelName"] as String, 
+        10000
+      )
+    }
+    else{
+      mSSClient.stop(mContext)
+    }
   }
 }

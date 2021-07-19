@@ -1237,6 +1237,19 @@ class RtcEngine with RtcEngineInterface {
       'preset': VoiceConversionPresetConverter(preset).value(),
     });
   }
+
+  // Added for screen share
+  @override
+  Future<void> screenShare(bool share, String appID, String? token, String channelName) {
+    dynamic context = RtcEngineContext(appID);
+    return _invokeMethod('screenShare', {
+      'share': share,
+      'config': context.toJson(),
+      'appID': appID,
+      'token': token,
+      'channelName': channelName
+    });
+  }
 }
 
 /// @nodoc
@@ -1262,7 +1275,8 @@ mixin RtcEngineInterface
         RtcAudioRecorderInterface,
         RtcInjectStreamInterface,
         RtcCameraInterface,
-        RtcStreamMessageInterface {
+        RtcStreamMessageInterface,
+        RtcScreenShareInterface {
   /// Destroys the [RtcEngine] instance and releases all resources used by the Agora SDK.
   ///
   /// This method is useful for apps that occasionally make voice or video calls, to free up resources for other operations when not making calls.
@@ -3242,4 +3256,14 @@ mixin RtcStreamMessageInterface {
   ///
   /// **Parameter** [message] Sent data.
   Future<void> sendStreamMessage(int streamId, String message);
+}
+
+/// @nodoc
+mixin RtcScreenShareInterface{
+  /// Used for enabling screen share calls
+  /// **Parameter** [share] to enable/disable stream
+  /// **Parameter** [appID] appID
+  /// **Parameter** [token] token
+  /// **Parameter** [channelName] channelName
+  Future<void> screenShare(bool share, String appID, String? token, String channelName);
 }

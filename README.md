@@ -1,5 +1,8 @@
 # agora_rtc_engine
 
+### NOTE: THIS IS A FORKED REPO WITH SCREEN SHARING FUNCTIONALITY ADDED
+#### To learn more about implementing screen share and other advanced features, refer [Agora API Examples](https://github.com/AgoraIO/API-Examples).
+
 ![pub package](https://img.shields.io/pub/v/agora_rtc_engine.svg?include_prereleases)
 
 [中文](README.zh.md)
@@ -8,6 +11,18 @@
 This Flutter plugin is a wrapper for [Agora Video SDK](https://docs.agora.io/en/Interactive%20Broadcast/product_live?platform=All%20Platforms).
 
 Agora.io provides building blocks for you to add real-time voice and video communications through a simple and powerful SDK. You can integrate the Agora SDK to enable real-time communications in your own application quickly.
+
+## Screen Sharing (Android Only)
+
+This repo is an edited version of the existing Agora Flutter SDK, meaning, all Agora features are available with the addition of screen sharing. Currently, Android only.
+
+Changes made:
+
+- Added ss and aidl folders under Android ([Agora-Flutter-SDK/android/src/main/java](https://github.com/Ayush412/Agora-Flutter-SDK/tree/master/android/src/main)). Refer [lib-screensharing](https://github.com/AgoraIO/API-Examples/tree/master/Android/APIExample/lib-screensharing/src/main).
+- Added a method channel to enable and disable screen share (Check [RtcEngine.kt](https://github.com/Ayush412/Agora-Flutter-SDK/blob/master/android/src/main/java/io/agora/rtc/base/RtcEngine.kt) and [rtc_engine.dart](https://github.com/Ayush412/Agora-Flutter-SDK/blob/master/lib/src/rtc_engine.dart)).
+
+TODO:
+- iOS implementation
 
 ## Usage
 

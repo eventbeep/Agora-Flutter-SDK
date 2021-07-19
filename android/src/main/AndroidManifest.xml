@@ -15,4 +15,21 @@
     android:name="android.permission.READ_PRIVILEGED_PHONE_STATE"
     tools:ignore="ProtectedPermissions" />
 
+  <!--Added for screen share-->  
+  <application>
+    <activity
+        android:name="io.agora.rtc.ss.impl.ScreenCapture$ScreenCaptureAssistantActivity"
+        android:process=":screensharingsvc"
+        android:screenOrientation="fullUser"
+        android:theme="@android:style/Theme.Translucent" />
+    <service
+        android:name="io.agora.rtc.ss.impl.ScreenSharingService"
+        android:stopWithTask="true"
+        android:process=":screensharingsvc">
+        <intent-filter>
+            <action android:name="android.intent.action.screenshare" />
+        </intent-filter>
+    </service>
+  </application>
+
 </manifest>

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:agora_rtc_engine/src/rtc_engine.dart';
 import 'package:flutter/services.dart';
 
 import 'classes.dart';
@@ -389,6 +390,19 @@ class RtcChannel with RtcChannelInterface {
       'muted': muted,
     });
   }
+
+  // Added for screen share
+  @override
+  Future<void> screenShare(bool share, String appID, String? token, String channelName) {
+    dynamic context = RtcEngineContext(appID);
+    return _invokeMethod('screenShare', {
+      'share': share,
+      'config': context.toJson(),
+      'appID': appID,
+      'token': token,
+      'channelName': channelName
+    });
+  }
 }
 
 /// @nodoc
@@ -404,7 +418,8 @@ mixin RtcChannelInterface
         RtcMediaMetadataInterface,
         RtcEncryptionInterface,
         RtcInjectStreamInterface,
-        RtcStreamMessageInterface {
+        RtcStreamMessageInterface,
+        RtcScreenShareInterface {
   /// Destroys the [RtcChannel] instance.
   Future<void> destroy();
 
@@ -932,4 +947,14 @@ mixin RtcStreamMessageInterface {
   ///
   /// **Parameter** [message] The message data.
   Future<void> sendStreamMessage(int streamId, String message);
+}
+
+/// @nodoc
+mixin RtcScreenShareInterface{
+  /// Used for enabling screen share calls
+  /// **Parameter** [share] to enable/disable stream
+  /// **Parameter** [appID] appID
+  /// **Parameter** [token] token
+  /// **Parameter** [channelName] channelName
+  Future<void> screenShare(bool share, String appID, String? token, String channelName);
 }

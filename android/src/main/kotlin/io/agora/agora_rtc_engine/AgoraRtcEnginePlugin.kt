@@ -1,5 +1,8 @@
 package io.agora.agora_rtc_engine
 
+//Added
+import io.agora.rtc.ss.TempClass
+
 import android.content.Context
 import android.os.Handler
 import android.os.Looper
@@ -76,6 +79,9 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
     this.binding = binding
     rtcChannelPlugin.onAttachedToEngine(binding)
     initPlugin(binding.applicationContext, binding.binaryMessenger, binding.platformViewRegistry)
+    
+    //Added
+    TempClass.sendContext(applicationContext)
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -144,4 +150,5 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
     }
     result.error(IllegalArgumentException::class.simpleName, null, null)
   }
+  
 }
