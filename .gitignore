@@ -13,6 +13,7 @@ build/
 *.lock
 *.*~
 example/*.lock
+example/lib/src/utils/settings.dart
 example/ios/Podfile.lock.classpath
 .project
 .settings
