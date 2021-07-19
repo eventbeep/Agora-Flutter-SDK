@@ -13,7 +13,6 @@ build/
 *.lock
 *.*~
 example/*.lock
-example/lib/src/utils/settings.dart
 example/ios/Podfile.lock.classpath
 .project
 .settings
@@ -57,3 +56,4 @@ example/ios/Podfile.lock.classpath
 **/ios/ServiceDefinitions.json
 **/ios/Runner/GeneratedPluginRegistrant.*
 android/gradle/wrapper/gradle-wrapper.properties
+example/lib/src/utils/settings.dart
