@@ -86,6 +86,8 @@ class RtcEngineEvents {
     const val RtmpStreamingEvent = "RtmpStreamingEvent"
     const val UserSuperResolutionEnabled = "UserSuperResolutionEnabled"
     const val UploadLogResult = "UploadLogResult"
+    //Added
+    const val ScreenSharePermission = "ScreenSharePermission"
 
     fun toMap(): Map<String, String> {
       return hashMapOf(
@@ -167,7 +169,9 @@ class RtcEngineEvents {
         "VideoSubscribeStateChanged" to VideoSubscribeStateChanged,
         "RtmpStreamingEvent" to RtmpStreamingEvent,
         "UserSuperResolutionEnabled" to UserSuperResolutionEnabled,
-        "UploadLogResult" to UploadLogResult
+        "UploadLogResult" to UploadLogResult,
+        //Added
+        "ScreenSharePermission" to ScreenSharePermission
       )
     }
   }
@@ -678,5 +682,10 @@ class RtcEngineEventHandler(
     @Annotations.AgoraUploadErrorReason reason: Int
   ) {
     callback(RtcEngineEvents.UploadLogResult, requestId, success, reason)
+  }
+
+  //Added
+  fun onScreenSharePermission(state: Boolean){
+    callback(RtcEngineEvents.ScreenSharePermission, state)
   }
 }

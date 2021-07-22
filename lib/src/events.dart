@@ -152,6 +152,10 @@ typedef UserSuperResolutionEnabledCallback = void Function(
 typedef UploadLogResultCallback = void Function(
     String requestId, bool success, UploadErrorReason reason);
 
+//Added 
+// ignore: public_member_api_docs
+typedef ScreenSharePermissionCallback = void Function(bool state);
+
 /// The SDK uses the [RtcEngineEventHandler] class to send callbacks to the application, and the application inherits the methods of this class to retrieve these callbacks.
 ///
 /// All methods in this class have their (empty) default implementations, and the application can inherit only some of the required events instead of all of them.
@@ -1013,6 +1017,10 @@ class RtcEngineEventHandler {
   ///  @nodoc
   UploadLogResultCallback? uploadLogResult;
 
+  //Added
+  ///  @nodoc
+  ScreenSharePermissionCallback? screenSharePermission;
+
   /// Constructs a [RtcEngineEventHandler]
   RtcEngineEventHandler({
     this.warning,
@@ -1094,6 +1102,8 @@ class RtcEngineEventHandler {
     this.rtmpStreamingEvent,
     this.userSuperResolutionEnabled,
     this.uploadLogResult,
+    //Added
+    this.screenSharePermission
   });
 
   // ignore: public_member_api_docs
@@ -1412,6 +1422,9 @@ class RtcEngineEventHandler {
         uploadLogResult?.call(
             data[0], data[1], UploadErrorReasonConverter.fromValue(data[2]).e);
         break;
+      //Added
+      case 'ScreenSharePermission':
+        screenSharePermission?.call(data[0]);
     }
   }
 }

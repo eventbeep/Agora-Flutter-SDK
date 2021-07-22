@@ -16,6 +16,10 @@ class RtcEngine with RtcEngineInterface {
   static final Stream _stream = _eventChannel.receiveBroadcastStream();
   static StreamSubscription? _subscription;
 
+  //Added
+  static final EventChannel ssChannel = EventChannel('ss_permission_channel');
+  static Stream get ssStream => ssChannel.receiveBroadcastStream();
+
   /// Exposing methodChannel to other files
   static MethodChannel get methodChannel => _methodChannel;
 

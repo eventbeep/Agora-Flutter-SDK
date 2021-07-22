@@ -44,8 +44,19 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
   // depending on the user's project. onAttachedToEngine or registerWith must both be defined
   // in the same class.
   companion object {
+    //Added
+    val permissionStateHandler = PermissionStateHandler()
     @JvmStatic
-    fun registerWith(registrar: Registrar) {
+    fun sendPermissionState(state : Boolean){
+      permissionStateHandler.send(state);
+    }
+
+    @JvmStatic
+    fun registerWith(registrar: Registrar){
+      //Added
+      val ssChannel = EventChannel(registrar.messenger(), "ss_permission_channel")
+      ssChannel.setStreamHandler(permissionStateHandler)
+
       AgoraRtcEnginePlugin().apply {
         this.registrar = registrar
         rtcChannelPlugin.initPlugin(registrar.messenger())
@@ -151,4 +162,24 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
     result.error(IllegalArgumentException::class.simpleName, null, null)
   }
   
+}
+
+class PermissionStateHandler : EventChannel.StreamHandler {
+  private var eventSink : EventChannel.EventSink? = null
+
+  override fun onListen(arguments: Any?, sink: EventChannel.EventSink) {
+    eventSink = sink
+  }
+
+  override fun onCancel(p0: Any?) {
+    eventSink = null
+  }
+
+  fun send(state : Boolean) {
+    println("yeet handler sent $state")
+    Handler(Looper.getMainLooper()).post {
+      eventSink?.success(state)
+    }
+  }
+
 }
