@@ -27,6 +27,11 @@ import io.agora.agora_rtc_engine.R;
 import android.content.ServiceConnection;
 import io.agora.rtc.ss.*;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.pm.ServiceInfo;
+
 import io.agora.rtc.ss.aidl.INotification;
 import io.agora.rtc.ss.aidl.IScreenSharing;
 import io.agora.rtc.ss.gles.GLRender;
@@ -48,6 +53,8 @@ public class ScreenSharingService extends Service {
 
     //Added
     public static RtcEngine mRtcEngine;
+    private static final int NOTIFICATION_ID = 1;
+    private static final String CHANNEL_ID = "ScreenShare";
 
     public static void setEngine(RtcEngine engine){
         mRtcEngine = engine;
@@ -153,11 +160,11 @@ public class ScreenSharingService extends Service {
     }
 
     //Added
-    // @Override
-    // public int onStartCommand(Intent intent, int flags, int startId) {
-    //     Log.d(LOG_TAG, "Screen Record Service Start Command *Added*");
-    //     return START_STICKY;
-    // }
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(LOG_TAG, "yeet ss onstartcommand");
+        return START_STICKY;
+    }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -203,22 +210,64 @@ public class ScreenSharingService extends Service {
 
     private void startCapture() {
         mScreenCapture.start();
-        //sartForeground(55431, getForeNotification());
+        //startForeground(55431, getForeNotification());
+        startForeground();
     }
 
-    private Notification getForeNotification() {
-        Notification notification;
-        String eventTitle = getResources().getString(R.string.app_name);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationHelper.generateChannelId(getApplication(), 55431))
-                .setContentTitle(eventTitle)
-                .setContentText(eventTitle);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            builder.setColor(getResources().getColor(android.R.color.black));
-        notification = builder.build();
-        notification.flags |= Notification.FLAG_ONGOING_EVENT;
+    //Added
+    private void startForeground() {
+        createNotificationChannel();
+        Intent notificationIntent = new Intent(getApplicationContext(),
+                getApplicationContext().getClass());
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this, 0, notificationIntent, 0);
 
-        return notification;
+        Notification.Builder builder = new Notification.Builder(this)
+                .setContentTitle(CHANNEL_ID)
+                .setContentIntent(pendingIntent);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            createNotificationChannel();
+            builder.setChannelId(CHANNEL_ID);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+        {
+            startForeground(NOTIFICATION_ID, builder.build(),
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
+        }
+        else
+        {
+            startForeground(NOTIFICATION_ID, builder.build());
+        }
     }
+
+    private void createNotificationChannel(){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID, CHANNEL_ID, importance);
+            channel.setDescription(CHANNEL_ID);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
+
+    // private Notification getForeNotification() {
+    //     Notification notification;
+    //     String eventTitle = getResources().getString(R.string.app_name);
+    //     NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationHelper.generateChannelId(getApplication(), 55431))
+    //             .setContentTitle(eventTitle)
+    //             .setContentText(eventTitle);
+    //     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+    //         builder.setColor(getResources().getColor(android.R.color.black));
+    //     notification = builder.build();
+    //     notification.flags |= Notification.FLAG_ONGOING_EVENT;
+
+    //     return notification;
+    // }
 
     private void stopCapture() {
         stopForeground(true);
@@ -235,22 +284,34 @@ public class ScreenSharingService extends Service {
 
     @Override
     public void onCreate() {
+        Log.d(LOG_TAG, "yeet ss oncreate called");
         mContext = getApplicationContext();
         initModules();
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+        Log.d(LOG_TAG, "yeet ss onbind called");
         setUpEngine(intent);
         setUpVideoConfig(intent);
         joinChannel(intent);
         return mBinder;
     }
 
+    //Added
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.d(LOG_TAG, "yeet ss onUnbind called");
+        stopForeground(true);
+        return true;
+    }
+
     @Override
     public void onDestroy() {
+        Log.d(LOG_TAG, "yeet ss onDestroy called");
         super.onDestroy();
         deInitModules();
+        stopForeground(true);
 
         //Added
         Log.d(LOG_TAG, "Screen Record Service Destroyed *Added*");
@@ -263,10 +324,14 @@ public class ScreenSharingService extends Service {
         Log.d(LOG_TAG, "Screen Record Service TaskRemoved *Added*");
         
         super.onTaskRemoved(rootIntent);
+        stopForeground(true);
         deInitModules();
         stopCapture();
         stopSelf();
     }
+
+    //Added
+    
 
     private void joinChannel(Intent intent) {
 
