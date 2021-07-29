@@ -159,13 +159,6 @@ public class ScreenSharingService extends Service {
         }
     }
 
-    //Added
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.d(LOG_TAG, "yeet ss onstartcommand");
-        return START_STICKY;
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         WindowManager wm = (WindowManager) getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
@@ -298,6 +291,21 @@ public class ScreenSharingService extends Service {
         return mBinder;
     }
 
+    @Override
+    public void onDestroy() {
+        Log.d(LOG_TAG, "yeet ss onDestroy called");
+        super.onDestroy();
+        deInitModules();
+        stopForeground(true);
+    }
+
+    //Added
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.d(LOG_TAG, "yeet ss onstartcommand");
+        return START_NOT_STICKY;
+    }
+
     //Added
     @Override
     public boolean onUnbind(Intent intent) {
@@ -306,32 +314,19 @@ public class ScreenSharingService extends Service {
         return true;
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d(LOG_TAG, "yeet ss onDestroy called");
-        super.onDestroy();
-        deInitModules();
-        stopForeground(true);
-
-        //Added
-        Log.d(LOG_TAG, "Screen Record Service Destroyed *Added*");
-    }
-
     //Added to stop service when app killed from recent apps tab !!not working!!
     @Override
     public void onTaskRemoved(Intent rootIntent) {
         //Added
-        Log.d(LOG_TAG, "Screen Record Service TaskRemoved *Added*");
+        Log.d(LOG_TAG, "yeet ss TaskRemoved called");
         
         super.onTaskRemoved(rootIntent);
-        stopForeground(true);
-        deInitModules();
         stopCapture();
+        deInitModules();
+        stopForeground(true);
         stopSelf();
     }
 
-    //Added
-    
 
     private void joinChannel(Intent intent) {
 

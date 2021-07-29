@@ -28,9 +28,9 @@
         android:stopWithTask="true"
         android:foregroundServiceType="mediaProjection"
         android:process=":screensharingsvc">
-        <intent-filter>
+        <!-- <intent-filter>
             <action android:name="android.intent.action.screenshare" />
-        </intent-filter>
+        </intent-filter> -->
     </service>
   </application>
 

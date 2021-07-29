@@ -398,6 +398,8 @@ class RtcEngineManager(
         emit(methodName, data)
       }
     })
+    //Added
+    ssContext = params["context"] as Context
     callback.code((engine as RtcEngineEx).setAppType((params["appType"] as Number).toInt()))
   }
 
@@ -451,7 +453,7 @@ class RtcEngineManager(
   override fun leaveChannel(callback: Callback) {
     //Added
     if(sharing){
-      mSSClient.stop(mContext)
+      mSSClient.stop(ssContext)
     }
     callback.code(engine?.leaveChannel())
   }
@@ -1289,7 +1291,7 @@ class RtcEngineManager(
   }
 
   //Added for screen share
-  lateinit var mContext : Context
+  lateinit var ssContext : Context
   lateinit var mSSClient : ScreenSharingClient
   lateinit var token : String
   lateinit var mListener : ScreenSharingClient.IStateListener
@@ -1301,7 +1303,7 @@ class RtcEngineManager(
     val temp1 = TempClass()
     mListener = temp1.createListener(mSSClient, token)
     mSSClient.setListener(mListener)
-    mContext = TempClass.getContext()
+    //mContext = TempClass.getContext()
   }
 
   override fun screenShare(params: Map<String, *>,callback: Callback){
@@ -1313,7 +1315,7 @@ class RtcEngineManager(
     }
     if (sharing){
       mSSClient.start(
-        mContext, 
+        ssContext, 
         params["appID"] as String, 
         token, 
         params["channelName"] as String, 
@@ -1321,7 +1323,7 @@ class RtcEngineManager(
       )
     }
     else{
-      mSSClient.stop(mContext)
+      mSSClient.stop(ssContext)
     }
   }
 }

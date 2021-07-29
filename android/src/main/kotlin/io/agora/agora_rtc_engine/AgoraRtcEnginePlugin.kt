@@ -92,7 +92,7 @@ class AgoraRtcEnginePlugin : FlutterPlugin, MethodCallHandler, EventChannel.Stre
     initPlugin(binding.applicationContext, binding.binaryMessenger, binding.platformViewRegistry)
     
     //Added
-    TempClass.sendContext(applicationContext)
+    TempClass.sendContext(binding.applicationContext)
   }
 
   override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {

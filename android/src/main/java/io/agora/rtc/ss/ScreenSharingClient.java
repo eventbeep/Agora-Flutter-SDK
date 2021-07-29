@@ -104,6 +104,8 @@ public class ScreenSharingClient{
             intent.putExtra(Constant.FRAME_RATE, VideoEncoderConfiguration.FRAME_RATE.FRAME_RATE_FPS_30);
             intent.putExtra(Constant.BITRATE, VideoEncoderConfiguration.STANDARD_BITRATE);
             intent.putExtra(Constant.ORIENTATION_MODE, VideoEncoderConfiguration.ORIENTATION_MODE.ORIENTATION_MODE_ADAPTIVE);
+            //
+            context.startService(intent);
             context.bindService(intent, mScreenShareConn, Context.BIND_AUTO_CREATE);
         } else {
             try {
@@ -129,6 +131,8 @@ public class ScreenSharingClient{
                 mScreenShareSvc = null;
             }
         }
+        //
+        context.stopService(new Intent(context, ScreenSharingService.class));
         context.unbindService(mScreenShareConn);
     }
 
