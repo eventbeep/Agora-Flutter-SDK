@@ -398,8 +398,6 @@ class RtcEngineManager(
         emit(methodName, data)
       }
     })
-    //Added
-    ssContext = params["context"] as Context
     callback.code((engine as RtcEngineEx).setAppType((params["appType"] as Number).toInt()))
   }
 
@@ -1303,7 +1301,7 @@ class RtcEngineManager(
     val temp1 = TempClass()
     mListener = temp1.createListener(mSSClient, token)
     mSSClient.setListener(mListener)
-    //mContext = TempClass.getContext()
+    ssContext = TempClass.getContext()
   }
 
   override fun screenShare(params: Map<String, *>,callback: Callback){
